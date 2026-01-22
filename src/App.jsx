@@ -10,6 +10,9 @@ function App() {
   const [difficulty, setDifficulty] = useState('easy');
   const [loading, setLoading] = useState(true);
   const [quizParams, setQuizParams] = useState(null);
+  const [questions, setQuestions] = useState(null);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizError, setQuizError] = useState(null);
 
   useEffect(() => {
     fetch('https://opentdb.com/api_category.php')
@@ -56,15 +59,54 @@ function App() {
     );
   }
 
-  // Affichage du quiz à venir ici
-  return (
-    <div>
-      <h2>Préparation du quiz...</h2>
-      <p>
-        {quizParams.amount} questions, Catégorie {quizParams.category}, Difficulté {quizParams.difficulty}
-      </p>
-    </div>
-  );
+  // Récupération des questions au lancement du quiz (toujours appelé, mais ne fait rien si quizParams est null)
+  useEffect(() => {
+    if (!quizParams) return;
+    setQuizLoading(true);
+    setQuizError(null);
+    setQuestions(null);
+    const url = `https://opentdb.com/api.php?amount=${quizParams.amount}&category=${quizParams.category}&difficulty=${quizParams.difficulty}&type=multiple`;
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur réseau');
+        return res.json();
+      })
+      .then(data => {
+        if (data.response_code !== 0) throw new Error('Aucune question trouvée');
+        setQuestions(data.results);
+        setQuizLoading(false);
+      })
+      .catch(err => {
+        setQuizError(err.message);
+        setQuizLoading(false);
+      });
+  }, [quizParams]);
+
+  let quizContent = null;
+  if (quizLoading) {
+    quizContent = <div>Chargement des questions...</div>;
+  } else if (quizError) {
+    quizContent = <div>Erreur lors de la récupération des questions : {quizError}</div>;
+  } else if (!questions) {
+    quizContent = (
+      <div>
+        <h2>Préparation du quiz...</h2>
+        <p>
+          {quizParams.amount} questions, Catégorie {quizParams.category}, Difficulté {quizParams.difficulty}
+        </p>
+      </div>
+    );
+  } else {
+    quizContent = (
+      <div>
+        <h2>Quiz prêt !</h2>
+        <p>{questions.length} questions chargées.</p>
+        {/* Affichage des questions à implémenter */}
+      </div>
+    );
+  }
+
+  return quizContent;
 }
 
 export default App;
