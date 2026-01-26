@@ -32,7 +32,7 @@ const QuizQuestion = ({
   return (
     <div className="quiz-question">
       <h2>Question {currentQuestionIndex + 1} / {totalQuestions}</h2>
-      <div className="score-display">Score : {score} / {currentQuestionIndex}</div>
+      <div className="score-display">Score : {score} / {totalQuestions}</div>
       <div className={`timer-display ${timeLeft <= 5 ? 'time-critical' : timeLeft <= 10 ? 'time-warning' : 'time-safe'}`}>
         Temps restant : {timeLeft}s
       </div>
@@ -52,18 +52,18 @@ const QuizQuestion = ({
       
       {selectedAnswer !== null && (
         <div>
-          <div className="answer-feedback">
+          <div className={`answer-feedback ${selectedAnswer === question.correct_answer ? 'answer-correct' : 'answer-incorrect'}`}>
             {selectedAnswer === question.correct_answer ? (
-              <span className="answer-correct">Bonne réponse !</span>
+              <span>✅ Bonne réponse !</span>
             ) : (
-              <span className="answer-incorrect">
-                Mauvaise réponse. La bonne réponse était : 
-                <span dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
+              <span>
+                ❌ Mauvaise réponse. La bonne réponse était : <br/>
+                <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
               </span>
             )}
           </div>
           <button className="next-btn" onClick={onNextQuestion}>
-            {currentQuestionIndex < totalQuestions - 1 ? 'Question suivante' : 'Voir le score final'}
+            {currentQuestionIndex < totalQuestions - 1 ? 'Question suivante ➡️' : 'Voir le score final 🏁'}
           </button>
         </div>
       )}

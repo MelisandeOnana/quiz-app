@@ -210,22 +210,98 @@ div[children*="Chargement"] {
   background-color: #0056b3;
 }
 
+/* Styles pour l'affichage du score pendant le quiz */
+.score-display {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #495057;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #e9ecef;
+  border-radius: 5px;
+}
+
 /* Classe pour l'affichage du timer */
 .timer-display {
   font-size: 1.2rem;
   font-weight: bold;
   margin: 10px 0;
+  padding: 0.5rem;
+  border-radius: 5px;
+  text-align: center;
 }
 
-.timer-display.time-critical { color: red; }
-.timer-display.time-warning { color: orange; }
-.timer-display.time-safe { color: green; }
+.timer-display.time-critical { 
+  color: #fff;
+  background-color: #dc3545;
+  animation: pulse 1s infinite;
+}
 
-/* Classes pour le feedback des réponses */
+.timer-display.time-warning { 
+  color: #fff;
+  background-color: #fd7e14;
+}
+
+.timer-display.time-safe { 
+  color: #fff;
+  background-color: #28a745;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Feedback pour les réponses */
+.answer-feedback {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
 .answer-correct {
-  color: green;
+  color: #28a745;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
 }
 
 .answer-incorrect {
-  color: red;
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+/* Écran de fin amélioré */
+.quiz-end {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.final-score {
+  margin: 2rem 0;
+}
+
+.final-score p {
+  font-size: 1.3rem;
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+/* Messages de chargement et d'erreur améliorés */
+.loading-state, .error-state, .preparation-state {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-state {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
 }

@@ -34,7 +34,6 @@ function App() {
       .then(res => res.json())
       .then(data => {
         setCategories(data.trivia_categories);
-        setCategory(data.trivia_categories[0]?.id || '');
         setLoading(false);
       });
   }, []);
@@ -53,11 +52,8 @@ function App() {
   useEffect(() => {
     if (questions && currentQuestion < questions.length && selectedAnswer === null) {
       startTimer(() => {
-        if (currentQuestion < questions.length - 1) {
-          setCurrentQuestion(prev => prev + 1);
-        } else {
-          setCurrentQuestion(prev => prev + 1);
-        }
+        // Temps écoulé - passer à la question suivante
+        handleNextQuestion();
       });
     }
     
@@ -75,7 +71,10 @@ function App() {
     setQuizError(null);
     setQuestions(null);
     
-    const url = `https://opentdb.com/api.php?amount=${quizParams.amount}&category=${quizParams.category}&difficulty=${quizParams.difficulty}&type=multiple`;
+    let url = `https://opentdb.com/api.php?amount=${quizParams.amount}&difficulty=${quizParams.difficulty}&type=multiple`;
+    if (quizParams.category) {
+      url += `&category=${quizParams.category}`;
+    }
     
     fetch(url)
       .then(res => {
@@ -105,15 +104,16 @@ function App() {
   };
 
   const handleNextQuestion = () => {
+    // Mise à jour du score si la réponse est correcte
     if (selectedAnswer === questions[currentQuestion].correct_answer) {
       setScore(prevScore => prevScore + 1);
     }
     
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setCurrentQuestion(currentQuestion + 1);
-    }
+    // Arrêter le timer
+    stopTimer();
+    
+    // Passer à la question suivante
+    setCurrentQuestion(currentQuestion + 1);
   };
 
   const handleNewQuiz = () => {
@@ -159,6 +159,7 @@ function App() {
     return (
       <PreparationState
         quizParams={quizParams}
+        categories={categories}
         onCancel={() => setQuizParams(null)}
       />
     );
@@ -166,10 +167,9 @@ function App() {
 
   // Quiz terminé
   if (currentQuestion >= questions.length) {
-    const finalScore = selectedAnswer === questions[questions.length - 1].correct_answer ? score + 1 : score;
     return (
       <QuizResults
-        score={finalScore}
+        score={score}
         totalQuestions={questions.length}
         onNewQuiz={handleNewQuiz}
       />
