@@ -9,6 +9,16 @@ const shuffleAnswers = (question) => {
   return answers;
 };
 
+const getTimerClass = (timeLeft) => {
+  if (timeLeft <= 5) return 'time-critical';
+  if (timeLeft <= 10) return 'time-warning';
+  return 'time-safe';
+};
+
+const isAnswerCorrect = (selectedAnswer, correctAnswer) => {
+  return selectedAnswer === correctAnswer;
+};
+
 const QuizQuestion = ({ 
   question, 
   currentQuestionIndex, 
@@ -29,11 +39,14 @@ const QuizQuestion = ({
 
   if (!question) return null;
 
+  const isCorrect = isAnswerCorrect(selectedAnswer, question.correct_answer);
+  const isLastQuestion = currentQuestionIndex >= totalQuestions - 1;
+
   return (
     <div className="quiz-question">
       <h2>Question {currentQuestionIndex + 1} / {totalQuestions}</h2>
       <div className="score-display">Score : {score} / {totalQuestions}</div>
-      <div className={`timer-display ${timeLeft <= 5 ? 'time-critical' : timeLeft <= 10 ? 'time-warning' : 'time-safe'}`}>
+      <div className={`timer-display ${getTimerClass(timeLeft)}`}>
         Temps restant : {timeLeft}s
       </div>
       <div className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
@@ -52,8 +65,8 @@ const QuizQuestion = ({
       
       {selectedAnswer !== null && (
         <div>
-          <div className={`answer-feedback ${selectedAnswer === question.correct_answer ? 'answer-correct' : 'answer-incorrect'}`}>
-            {selectedAnswer === question.correct_answer ? (
+          <div className={`answer-feedback ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`}>
+            {isCorrect ? (
               <span>Bonne réponse !</span>
             ) : (
               <span>
@@ -63,7 +76,7 @@ const QuizQuestion = ({
             )}
           </div>
           <button className="next-btn" onClick={onNextQuestion}>
-            {currentQuestionIndex < totalQuestions - 1 ? 'Question suivante' : 'Voir le score final'}
+            {isLastQuestion ? 'Voir le score final' : 'Question suivante'}
           </button>
         </div>
       )}
