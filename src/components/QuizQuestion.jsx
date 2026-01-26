@@ -2,21 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 const shuffleAnswers = (question) => {
   const answers = [...question.incorrect_answers, question.correct_answer];
-  for (let i = answers.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [answers[i], answers[j]] = [answers[j], answers[i]];
-  }
-  return answers;
+  return answers.sort(() => Math.random() - 0.5);
 };
 
 const getTimerClass = (timeLeft) => {
   if (timeLeft <= 5) return 'time-critical';
   if (timeLeft <= 10) return 'time-warning';
   return 'time-safe';
-};
-
-const isAnswerCorrect = (selectedAnswer, correctAnswer) => {
-  return selectedAnswer === correctAnswer;
 };
 
 const QuizQuestion = ({ 
@@ -39,7 +31,7 @@ const QuizQuestion = ({
 
   if (!question) return null;
 
-  const isCorrect = isAnswerCorrect(selectedAnswer, question.correct_answer);
+  const isCorrect = selectedAnswer === question.correct_answer;
   const isLastQuestion = currentQuestionIndex >= totalQuestions - 1;
 
   return (

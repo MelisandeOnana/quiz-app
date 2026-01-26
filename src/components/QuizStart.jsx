@@ -7,13 +7,7 @@ const QuizStart = ({
   onStartQuiz, 
   loading 
 }) => {
-  if (loading) {
-    return <div>Chargement des catégories...</div>;
-  }
-
-  const handleStartClick = () => {
-    onStartQuiz(settings);
-  };
+  if (loading) return <div>Chargement...</div>;
 
   return (
     <div className="start-screen">
@@ -23,7 +17,7 @@ const QuizStart = ({
         <label>Nombre de questions : </label>
         <select 
           value={settings.amount} 
-          onChange={e => onUpdateSetting('amount', Number(e.target.value))}
+          onChange={e => onUpdateSetting('amount', +e.target.value)}
         >
           <option value={5}>5 questions</option>
           <option value={10}>10 questions</option>
@@ -56,7 +50,7 @@ const QuizStart = ({
         </select>
       </div>
       
-      <button onClick={handleStartClick} className="new-quiz-btn">
+      <button onClick={() => onStartQuiz(settings)} className="new-quiz-btn">
         Commencer le quiz
       </button>
     </div>

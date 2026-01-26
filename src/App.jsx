@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import QuizStart from './components/QuizStart';
 import QuizQuestion from './components/QuizQuestion';
@@ -8,24 +8,22 @@ import { useTimer } from './hooks/useTimer';
 
 function App() {
   const [categories, setCategories] = useState([]);
-  const [quizSettings, setQuizSettings] = useState({
+  const [settings, setSettings] = useState({
     amount: 5,
     category: '',
     difficulty: 'easy'
   });
   const [loading, setLoading] = useState(true);
- 
-  const [quiz, setQuiz] = useState({
-    params: null,
-    questions: null,
-    loading: false,
-    error: null,
-    currentQuestion: 0,
-    selectedAnswer: null,
-    score: 0
-  });
   
-  const { timeLeft, startTimer, stopTimer, resetTimer } = useTimer(15);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [score, setScore] = useState(0);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const { timeLeft, start, stop, reset } = useTimer(15);
 
   useEffect(() => {
     fetch('https://opentdb.com/api_category.php')
@@ -36,153 +34,91 @@ function App() {
       });
   }, []);
 
-  const updateQuiz = (updates) => {
-    setQuiz(prev => ({ ...prev, ...updates }));
-  };
-
-  const resetQuiz = useCallback(() => {
-    updateQuiz({
-      currentQuestion: 0,
-      selectedAnswer: null,
-      score: 0
-    });
-    stopTimer();
-    resetTimer();
-  }, [resetTimer, stopTimer]);
-
   useEffect(() => {
-    if (!quiz.params) {
-      resetQuiz();
+    if (questions.length && currentQuestion < questions.length && !selectedAnswer) {
+      start();
     }
-  }, [quiz.params, resetQuiz]);
+  }, [currentQuestion, selectedAnswer, questions, start]);
 
-  const handleTimeUp = useCallback(() => {
-    updateQuiz({ currentQuestion: quiz.currentQuestion + 1 });
-  }, [quiz.currentQuestion]);
-
-  useEffect(() => {
-    const { questions, currentQuestion, selectedAnswer } = quiz;
-    if (questions && currentQuestion < questions.length && selectedAnswer === null) {
-      startTimer(handleTimeUp);
-    }
-  }, [quiz.currentQuestion, quiz.questions, startTimer, handleTimeUp, quiz.selectedAnswer]);
-
-  useEffect(() => {
-    const { questions, currentQuestion } = quiz;
-    if (questions && currentQuestion < questions.length) {
-      updateQuiz({ selectedAnswer: null });
-    }
-  }, [quiz.currentQuestion, quiz.questions]);
-
-  useEffect(() => {
-    if (!quiz.params) return;
+  const startQuiz = (params) => {
+    setQuizStarted(true);
+    setQuizLoading(true);
+    setError(null);
     
-    updateQuiz({ loading: true, error: null, questions: null });
-    
-    const { amount, difficulty, category } = quiz.params;
-    let url = `https://opentdb.com/api.php?amount=${amount}&difficulty=${difficulty}&type=multiple`;
-    if (category) url += `&category=${category}`;
+    let url = `https://opentdb.com/api.php?amount=${params.amount}&difficulty=${params.difficulty}&type=multiple`;
+    if (params.category) url += `&category=${params.category}`;
     
     fetch(url)
-      .then(res => {
-        if (!res.ok) throw new Error('Erreur réseau');
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
-        if (data.response_code !== 0) throw new Error('Aucune question trouvée pour ces paramètres');
-        updateQuiz({ questions: data.results, loading: false });
+        if (data.response_code !== 0) throw new Error('Aucune question trouvée');
+        setQuestions(data.results);
+        setQuizLoading(false);
       })
       .catch(err => {
-        updateQuiz({ error: err.message, loading: false });
+        setError(err.message);
+        setQuizLoading(false);
       });
-  }, [quiz.params]);
-
-  const handleStartQuiz = (params) => {
-    updateQuiz({ params });
   };
 
-  const updateQuizSetting = (key, value) => {
-    setQuizSettings(prev => ({ ...prev, [key]: value }));
+  const selectAnswer = (answer) => {
+    if (selectedAnswer) return;
+    setSelectedAnswer(answer);
+    stop();
   };
 
-  const handleAnswerSelect = (answer) => {
-    if (quiz.selectedAnswer !== null) return;
-    updateQuiz({ selectedAnswer: answer });
-    stopTimer();
-  };
-
-  const handleNextQuestion = useCallback(() => {
-    const { selectedAnswer, questions, currentQuestion, score } = quiz;
+  const nextQuestion = () => {
     if (selectedAnswer === questions[currentQuestion].correct_answer) {
-      updateQuiz({ score: score + 1 });
+      setScore(score + 1);
     }
-    updateQuiz({ currentQuestion: currentQuestion + 1 });
-  }, [quiz]);
-
-  const handleNewQuiz = () => {
-    updateQuiz({ params: null });
+    setCurrentQuestion(currentQuestion + 1);
+    setSelectedAnswer(null);
   };
 
-  if (!quiz.params) {
+  const newQuiz = () => {
+    setQuizStarted(false);
+    setQuestions([]);
+    setCurrentQuestion(0);
+    setSelectedAnswer(null);
+    setScore(0);
+    setError(null);
+    reset();
+  };
+
+  const updateSetting = (key, value) => {
+    setSettings({ ...settings, [key]: value });
+  };
+
+  if (!quizStarted) {
     return (
       <QuizStart
         categories={categories}
-        settings={quizSettings}
-        onUpdateSetting={updateQuizSetting}
-        onStartQuiz={handleStartQuiz}
+        settings={settings}
+        onUpdateSetting={updateSetting}
+        onStartQuiz={startQuiz}
         loading={loading}
       />
     );
   }
 
-  if (quiz.loading) {
-    return (
-      <LoadingState
-        message="Chargement des questions..."
-        onCancel={() => updateQuiz({ params: null })}
-      />
-    );
-  }
+  if (quizLoading) return <LoadingState message="Chargement des questions..." onCancel={newQuiz} />;
+  if (error) return <ErrorState message={error} onRetry={newQuiz} />;
+  if (!questions.length) return <PreparationState quizParams={settings} categories={categories} onCancel={newQuiz} />;
 
-  if (quiz.error) {
-    return (
-      <ErrorState
-        message={quiz.error}
-        onRetry={() => updateQuiz({ params: null })}
-      />
-    );
-  }
-
-  if (!quiz.questions) {
-    return (
-      <PreparationState
-        quizParams={quiz.params}
-        categories={categories}
-        onCancel={() => updateQuiz({ params: null })}
-      />
-    );
-  }
-
-  if (quiz.currentQuestion >= quiz.questions.length) {
-    return (
-      <QuizResults
-        score={quiz.score}
-        totalQuestions={quiz.questions.length}
-        onNewQuiz={handleNewQuiz}
-      />
-    );
+  if (currentQuestion >= questions.length) {
+    return <QuizResults score={score} totalQuestions={questions.length} onNewQuiz={newQuiz} />;
   }
 
   return (
     <QuizQuestion
-      question={quiz.questions[quiz.currentQuestion]}
-      currentQuestionIndex={quiz.currentQuestion}
-      totalQuestions={quiz.questions.length}
-      score={quiz.score}
+      question={questions[currentQuestion]}
+      currentQuestionIndex={currentQuestion}
+      totalQuestions={questions.length}
+      score={score}
       timeLeft={timeLeft}
-      onAnswerSelect={handleAnswerSelect}
-      onNextQuestion={handleNextQuestion}
-      selectedAnswer={quiz.selectedAnswer}
+      onAnswerSelect={selectAnswer}
+      onNextQuestion={nextQuestion}
+      selectedAnswer={selectedAnswer}
     />
   );
 }

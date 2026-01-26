@@ -13,23 +13,16 @@ const LoadingState = ({ message, onCancel }) => (
 const ErrorState = ({ message, onRetry }) => (
   <div className="error-state">
     <h2>Erreur</h2>
-    <p>Erreur lors de la récupération des questions : {message}</p>
+    <p>Erreur : {message}</p>
     <button onClick={onRetry} className="new-quiz-btn">
-      Retour à l'écran d'accueil
+      Retour à l'accueil
     </button>
   </div>
 );
 
 const PreparationState = ({ quizParams, onCancel, categories }) => {
-  const categoryName = quizParams.category 
-    ? categories?.find(cat => cat.id == quizParams.category)?.name || 'Catégorie inconnue'
-    : 'Toutes catégories';
-  
-  const difficultyName = {
-    'easy': 'Facile',
-    'medium': 'Moyen', 
-    'hard': 'Difficile'
-  }[quizParams.difficulty] || quizParams.difficulty;
+  const categoryName = categories?.find(cat => cat.id == quizParams.category)?.name || 'Toutes catégories';
+  const difficulties = { easy: 'Facile', medium: 'Moyen', hard: 'Difficile' };
 
   return (
     <div className="preparation-state">
@@ -37,7 +30,7 @@ const PreparationState = ({ quizParams, onCancel, categories }) => {
       <p>
         <strong>{quizParams.amount}</strong> questions<br/>
         <strong>{categoryName}</strong><br/>
-        Difficulté: <strong>{difficultyName}</strong>
+        Difficulté: <strong>{difficulties[quizParams.difficulty] || quizParams.difficulty}</strong>
       </p>
       <button onClick={onCancel} className="new-quiz-btn">
         Annuler
