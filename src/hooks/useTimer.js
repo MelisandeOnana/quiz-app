@@ -13,11 +13,11 @@ export const useTimer = (initialTime = 15) => {
 
     timerRef.current = setInterval(() => {
       setTimeLeft(prevTime => {
-        if (prevTime <= 1) {
+        if (prevTime === 0) {
           clearInterval(timerRef.current);
           timerRef.current = null;
           if (onTimeUp) {
-            setTimeout(onTimeUp, 500);
+            onTimeUp();
           }
           return 0;
         }

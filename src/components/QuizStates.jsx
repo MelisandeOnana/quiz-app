@@ -2,7 +2,7 @@ import React from 'react';
 
 const LoadingState = ({ message, onCancel }) => (
   <div className="loading-state">
-    <h2>⏳ Chargement...</h2>
+    <h2>Chargement...</h2>
     <p>{message}</p>
     <button onClick={onCancel} className="new-quiz-btn">
       Annuler
@@ -12,7 +12,7 @@ const LoadingState = ({ message, onCancel }) => (
 
 const ErrorState = ({ message, onRetry }) => (
   <div className="error-state">
-    <h2>❌ Erreur</h2>
+    <h2>Erreur</h2>
     <p>Erreur lors de la récupération des questions : {message}</p>
     <button onClick={onRetry} className="new-quiz-btn">
       Retour à l'écran d'accueil
@@ -33,7 +33,7 @@ const PreparationState = ({ quizParams, onCancel, categories }) => {
 
   return (
     <div className="preparation-state">
-      <h2>🚀 Préparation du quiz...</h2>
+      <h2>Préparation du quiz...</h2>
       <p>
         <strong>{quizParams.amount}</strong> questions<br/>
         <strong>{categoryName}</strong><br/>

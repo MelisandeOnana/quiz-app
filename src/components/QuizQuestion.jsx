@@ -54,16 +54,16 @@ const QuizQuestion = ({
         <div>
           <div className={`answer-feedback ${selectedAnswer === question.correct_answer ? 'answer-correct' : 'answer-incorrect'}`}>
             {selectedAnswer === question.correct_answer ? (
-              <span>✅ Bonne réponse !</span>
+              <span>Bonne réponse !</span>
             ) : (
               <span>
-                ❌ Mauvaise réponse. La bonne réponse était : <br/>
+                Mauvaise réponse. La bonne réponse était : <br/>
                 <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
               </span>
             )}
           </div>
           <button className="next-btn" onClick={onNextQuestion}>
-            {currentQuestionIndex < totalQuestions - 1 ? 'Question suivante ➡️' : 'Voir le score final 🏁'}
+            {currentQuestionIndex < totalQuestions - 1 ? 'Question suivante' : 'Voir le score final'}
           </button>
         </div>
       )}
