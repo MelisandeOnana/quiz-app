@@ -11,16 +11,7 @@ const getTimerClass = (timeLeft) => {
   return 'time-safe';
 };
 
-const QuizQuestion = ({ 
-  question, 
-  currentQuestionIndex, 
-  totalQuestions, 
-  score, 
-  timeLeft, 
-  onAnswerSelect, 
-  onNextQuestion,
-  selectedAnswer
-}) => {
+const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, timeLeft, onAnswerSelect, onNextQuestion, selectedAnswer }) => {
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
   useEffect(() => {
