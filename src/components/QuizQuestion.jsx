@@ -23,6 +23,7 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
   if (!question) return null;
 
   const isCorrect = selectedAnswer === question.correct_answer;
+  const isTimeUp = selectedAnswer === '__TIME_UP__';
   const isLastQuestion = currentQuestionIndex >= totalQuestions - 1;
 
   return (
@@ -49,18 +50,24 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
       {selectedAnswer !== null && (
         <div>
           <div className={`answer-feedback ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`}>
-            {isCorrect ? (
-              <span>Bonne réponse !</span>
+            {isTimeUp ? (
+              <span>⏰ Temps écoulé ! La bonne réponse était : <br/>
+                <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
+              </span>
+            ) : isCorrect ? (
+              <span>✅ Bonne réponse !</span>
             ) : (
               <span>
-                Mauvaise réponse. La bonne réponse était : <br/>
+                ❌ Mauvaise réponse. La bonne réponse était : <br/>
                 <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
               </span>
             )}
           </div>
-          <button className="next-btn" onClick={onNextQuestion}>
-            {isLastQuestion ? 'Voir le score final' : 'Question suivante'}
-          </button>
+          {!isTimeUp && (
+            <button className="next-btn" onClick={onNextQuestion}>
+              {isLastQuestion ? 'Voir le score final' : 'Question suivante'}
+            </button>
+          )}
         </div>
       )}
     </div>

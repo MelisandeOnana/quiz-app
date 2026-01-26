@@ -23,7 +23,18 @@ function App() {
   const [quizLoading, setQuizLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  const { timeLeft, start, stop, reset } = useTimer(15);
+  const handleTimeUp = () => {
+    if (!selectedAnswer) {
+      // Temps écoulé = réponse incorrecte
+      setSelectedAnswer('__TIME_UP__'); // Valeur spéciale pour indiquer que le temps est écoulé
+      // Attendre un peu pour que l'utilisateur voie le message, puis passer à la question suivante
+      setTimeout(() => {
+        nextQuestion();
+      }, 1500);
+    }
+  };
+
+  const { timeLeft, start, stop, reset } = useTimer(15, handleTimeUp);
 
   useEffect(() => {
     fetch('https://opentdb.com/api_category.php')
@@ -38,7 +49,7 @@ function App() {
     if (questions.length && currentQuestion < questions.length && !selectedAnswer) {
       start();
     }
-  }, [currentQuestion, selectedAnswer, questions, start]);
+  }, [currentQuestion, selectedAnswer, questions.length]);
 
   const startQuiz = (params) => {
     setQuizStarted(true);
@@ -68,7 +79,8 @@ function App() {
   };
 
   const nextQuestion = () => {
-    if (selectedAnswer === questions[currentQuestion].correct_answer) {
+    // Ne compter comme correct que si une vraie réponse a été sélectionnée et qu'elle est correcte
+    if (selectedAnswer && selectedAnswer !== '__TIME_UP__' && selectedAnswer === questions[currentQuestion].correct_answer) {
       setScore(score + 1);
     }
     setCurrentQuestion(currentQuestion + 1);
