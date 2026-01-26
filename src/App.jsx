@@ -7,28 +7,23 @@ import { LoadingState, ErrorState, PreparationState } from './components/QuizSta
 import { useTimer } from './hooks/useTimer';
 
 function App() {
-  // Configuration du quiz
   const [categories, setCategories] = useState([]);
   const [amount, setAmount] = useState(5);
   const [category, setCategory] = useState('');
   const [difficulty, setDifficulty] = useState('easy');
   const [loading, setLoading] = useState(true);
-  
-  // État du quiz
+ 
   const [quizParams, setQuizParams] = useState(null);
   const [questions, setQuestions] = useState(null);
   const [quizLoading, setQuizLoading] = useState(false);
   const [quizError, setQuizError] = useState(null);
 
-  // État de la question actuelle
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
   
-  // Timer personnalisé
   const { timeLeft, startTimer, stopTimer, resetTimer } = useTimer(15);
 
-  // Chargement des catégories
   useEffect(() => {
     fetch('https://opentdb.com/api_category.php')
       .then(res => res.json())
@@ -38,7 +33,6 @@ function App() {
       });
   }, []);
 
-  // Reset de l'état quand on quitte le quiz
   useEffect(() => {
     if (!quizParams) {
       setCurrentQuestion(0);
@@ -49,30 +43,24 @@ function App() {
     }
   }, [quizParams, resetTimer, stopTimer]);
 
-  // Gestionnaire pour le temps écoulé
   const handleTimeUp = useCallback(() => {
-    // Pas de réponse sélectionnée, pas de point
     setCurrentQuestion(prevCurrent => prevCurrent + 1);
   }, []);
 
-  // Démarrage du timer pour une nouvelle question
   useEffect(() => {
     if (questions && currentQuestion < questions.length && selectedAnswer === null) {
       startTimer(() => {
-        // Temps écoulé - passer à la question suivante automatiquement
         handleTimeUp();
       });
     }
   }, [currentQuestion, questions, startTimer, handleTimeUp, selectedAnswer]);
 
-  // Reset de la réponse sélectionnée pour chaque nouvelle question
   useEffect(() => {
     if (questions && currentQuestion < questions.length) {
       setSelectedAnswer(null);
     }
   }, [currentQuestion, questions]);
 
-  // Chargement des questions
   useEffect(() => {
     if (!quizParams) return;
     
@@ -101,7 +89,6 @@ function App() {
       });
   }, [quizParams]);
 
-  // Gestionnaires d'événements
   const handleStartQuiz = (params) => {
     setQuizParams(params);
   };
@@ -113,12 +100,10 @@ function App() {
   };
 
   const handleNextQuestion = useCallback(() => {
-    // Mise à jour du score si la réponse est correcte
     if (selectedAnswer === questions[currentQuestion].correct_answer) {
       setScore(prevScore => prevScore + 1);
     }
     
-    // Passer à la question suivante
     setCurrentQuestion(currentQuestion + 1);
   }, [selectedAnswer, questions, currentQuestion]);
 
@@ -126,7 +111,6 @@ function App() {
     setQuizParams(null);
   };
 
-  // Rendu conditionnel selon l'état
   if (!quizParams) {
     return (
       <QuizStart
