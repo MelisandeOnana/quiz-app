@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import QuizStart from './components/QuizStart';
 import QuizQuestion from './components/QuizQuestion';
@@ -44,24 +44,33 @@ function App() {
       setCurrentQuestion(0);
       setSelectedAnswer(null);
       setScore(0);
+      stopTimer();
       resetTimer();
     }
-  }, [quizParams, resetTimer]);
+  }, [quizParams, resetTimer, stopTimer]);
+
+  // Gestionnaire pour le temps écoulé
+  const handleTimeUp = useCallback(() => {
+    // Pas de réponse sélectionnée, pas de point
+    setCurrentQuestion(prevCurrent => prevCurrent + 1);
+  }, []);
 
   // Démarrage du timer pour une nouvelle question
   useEffect(() => {
     if (questions && currentQuestion < questions.length && selectedAnswer === null) {
       startTimer(() => {
-        // Temps écoulé - passer à la question suivante
-        handleNextQuestion();
+        // Temps écoulé - passer à la question suivante automatiquement
+        handleTimeUp();
       });
     }
-    
-    // Reset de la réponse sélectionnée pour chaque nouvelle question
-    if (currentQuestion < (questions?.length || 0)) {
+  }, [currentQuestion, questions, startTimer, handleTimeUp, selectedAnswer]);
+
+  // Reset de la réponse sélectionnée pour chaque nouvelle question
+  useEffect(() => {
+    if (questions && currentQuestion < questions.length) {
       setSelectedAnswer(null);
     }
-  }, [currentQuestion, questions, selectedAnswer, startTimer]);
+  }, [currentQuestion, questions]);
 
   // Chargement des questions
   useEffect(() => {
@@ -103,18 +112,15 @@ function App() {
     stopTimer();
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = useCallback(() => {
     // Mise à jour du score si la réponse est correcte
     if (selectedAnswer === questions[currentQuestion].correct_answer) {
       setScore(prevScore => prevScore + 1);
     }
     
-    // Arrêter le timer
-    stopTimer();
-    
     // Passer à la question suivante
     setCurrentQuestion(currentQuestion + 1);
-  };
+  }, [selectedAnswer, questions, currentQuestion]);
 
   const handleNewQuiz = () => {
     setQuizParams(null);
