@@ -25,9 +25,7 @@ function App() {
   
   const handleTimeUp = () => {
     if (!selectedAnswer) {
-      // Temps écoulé = réponse incorrecte
-      setSelectedAnswer('__TIME_UP__'); // Valeur spéciale pour indiquer que le temps est écoulé
-      // Attendre un peu pour que l'utilisateur voie le message, puis passer à la question suivante
+      setSelectedAnswer('__TIME_UP__'); 
       setTimeout(() => {
         nextQuestion();
       }, 1500);
@@ -79,7 +77,6 @@ function App() {
   };
 
   const nextQuestion = () => {
-    // Ne compter comme correct que si une vraie réponse a été sélectionnée et qu'elle est correcte
     if (selectedAnswer && selectedAnswer !== '__TIME_UP__' && selectedAnswer === questions[currentQuestion].correct_answer) {
       setScore(score + 1);
     }
