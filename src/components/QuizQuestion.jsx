@@ -55,10 +55,10 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
                 <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
               </span>
             ) : isCorrect ? (
-              <span>✅ Bonne réponse !</span>
+              <span>Bonne réponse !</span>
             ) : (
               <span>
-                ❌ Mauvaise réponse. La bonne réponse était : <br/>
+                Mauvaise réponse. La bonne réponse était : <br/>
                 <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
               </span>
             )}
