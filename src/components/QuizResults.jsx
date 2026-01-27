@@ -1,10 +1,10 @@
 import React from 'react';
 
 const getScoreMessage = (percentage) => {
-  if (percentage >= 90) return { text: "Excellent ! 🎉", class: "excellent" };
-  if (percentage >= 70) return { text: "Très bien ! 👍", class: "good" };
-  if (percentage >= 50) return { text: "Pas mal ! 👌", class: "average" };
-  return { text: "Continuez à vous entraîner ! 💪", class: "poor" };
+  if (percentage >= 90) return { text: "Excellent !", class: "excellent" };
+  if (percentage >= 70) return { text: "Très bien !", class: "good" };
+  if (percentage >= 50) return { text: "Pas mal !", class: "average" };
+  return { text: "Continuez à vous entraîner !", class: "poor" };
 };
 
 const QuizResults = ({ score, totalQuestions, onNewQuiz }) => {
