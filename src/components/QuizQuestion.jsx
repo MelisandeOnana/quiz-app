@@ -51,7 +51,7 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
         <div>
           <div className={`answer-feedback ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`}>
             {isTimeUp ? (
-              <span>⏰ Temps écoulé ! La bonne réponse était : <br/>
+              <span>Temps écoulé ! La bonne réponse était : <br/>
                 <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
               </span>
             ) : isCorrect ? (
