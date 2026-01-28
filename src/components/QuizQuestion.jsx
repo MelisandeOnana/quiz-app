@@ -11,7 +11,7 @@ const getTimerClass = (timeLeft) => {
   return 'time-safe';
 };
 
-const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, timeLeft, onAnswerSelect, onNextQuestion, selectedAnswer }) => {
+const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, timeLeft, onAnswerSelect, onNextQuestion, selectedAnswer, isTimeUp }) => {
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
   useEffect(() => {
@@ -23,7 +23,6 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
   if (!question) return null;
 
   const isCorrect = selectedAnswer === question.correct_answer;
-  const isTimeUp = selectedAnswer === '__TIME_UP__';
   const isLastQuestion = currentQuestionIndex >= totalQuestions - 1;
 
   return (
@@ -47,9 +46,9 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
         ))}
       </div>
       
-      {selectedAnswer !== null && (
+      {(selectedAnswer !== null || isTimeUp) && (
         <div>
-          <div className={`answer-feedback ${isCorrect ? 'answer-correct' : 'answer-incorrect'}`}>
+          <div className={`answer-feedback ${isTimeUp ? '' : isCorrect ? 'answer-correct' : 'answer-incorrect'}`}>
             {isTimeUp ? (
               <span>Temps écoulé ! La bonne réponse était : <br/>
                 <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />

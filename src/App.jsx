@@ -14,22 +14,19 @@ function App() {
     difficulty: 'easy'
   });
   const [loading, setLoading] = useState(true);
-  
   const [quizStarted, setQuizStarted] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isTimeUp, setIsTimeUp] = useState(false);
   const [score, setScore] = useState(0);
   const [quizLoading, setQuizLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const handleTimeUp = () => {
-    if (!selectedAnswer) {
-      setSelectedAnswer('__TIME_UP__'); 
-      setTimeout(() => {
-        nextQuestion();
-      }, 1500);
-    }
+    if (selectedAnswer) return;
+    setIsTimeUp(true);
+    setTimeout(nextQuestion, 1500);
   };
 
   const { timeLeft, start, stop, reset } = useTimer(15, handleTimeUp);
@@ -44,10 +41,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (questions.length && currentQuestion < questions.length && !selectedAnswer) {
+    if (questions.length && currentQuestion < questions.length && !selectedAnswer && !isTimeUp) {
       start();
     }
-  }, [currentQuestion, selectedAnswer, questions.length]);
+  }, [currentQuestion, selectedAnswer, isTimeUp, questions.length]);
 
   const startQuiz = (params) => {
     setQuizStarted(true);
@@ -71,17 +68,18 @@ function App() {
   };
 
   const selectAnswer = (answer) => {
-    if (selectedAnswer) return;
+    if (selectedAnswer || isTimeUp) return;
     setSelectedAnswer(answer);
     stop();
   };
 
   const nextQuestion = () => {
-    if (selectedAnswer && selectedAnswer !== '__TIME_UP__' && selectedAnswer === questions[currentQuestion].correct_answer) {
+    if (!isTimeUp && selectedAnswer && selectedAnswer === questions[currentQuestion].correct_answer) {
       setScore(score + 1);
     }
     setCurrentQuestion(currentQuestion + 1);
     setSelectedAnswer(null);
+    setIsTimeUp(false);
   };
 
   const newQuiz = () => {
@@ -89,6 +87,7 @@ function App() {
     setQuestions([]);
     setCurrentQuestion(0);
     setSelectedAnswer(null);
+    setIsTimeUp(false);
     setScore(0);
     setError(null);
     reset();
@@ -128,6 +127,7 @@ function App() {
       onAnswerSelect={selectAnswer}
       onNextQuestion={nextQuestion}
       selectedAnswer={selectedAnswer}
+      isTimeUp={isTimeUp}
     />
   );
 }
