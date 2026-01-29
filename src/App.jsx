@@ -3,7 +3,6 @@ import './App.css';
 import QuizStart from './components/QuizStart';
 import QuizQuestion from './components/QuizQuestion';
 import QuizResults from './components/QuizResults';
-import { ErrorState } from './components/QuizStates';
 import { useTimer } from './hooks/useTimer';
 
 function App() {
@@ -109,7 +108,14 @@ function App() {
     );
   }
 
-  if (error) return <ErrorState message={error} onRetry={newQuiz} />;
+  if (error) {
+    return (
+      <div>
+        <p>Erreur : {error}</p>
+        <button onClick={newQuiz}>Recommencer</button>
+      </div>
+    );
+  }
 
   if (loading) {
     return <div>...</div>;
