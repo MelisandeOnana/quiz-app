@@ -1,7 +1,6 @@
 import React from 'react';
 
-const QuizStart = ({ categories, settings, onUpdateSetting, onStartQuiz, loading }) => {
-  if (loading) return <div>Chargement...</div>;
+const QuizStart = ({ categories, settings, onUpdateSetting, onStartQuiz }) => {
 
   return (
     <div className="start-screen">

@@ -3,7 +3,7 @@ import './App.css';
 import QuizStart from './components/QuizStart';
 import QuizQuestion from './components/QuizQuestion';
 import QuizResults from './components/QuizResults';
-import { LoadingState, ErrorState, PreparationState } from './components/QuizStates';
+import { ErrorState } from './components/QuizStates';
 import { useTimer } from './hooks/useTimer';
 
 function App() {
@@ -13,15 +13,16 @@ function App() {
     category: '',
     difficulty: 'easy'
   });
-  const [loading, setLoading] = useState(true);
+
   const [quizStarted, setQuizStarted] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [score, setScore] = useState(0);
-  const [quizLoading, setQuizLoading] = useState(false);
+
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleTimeUp = () => {
     if (selectedAnswer) return;
@@ -36,7 +37,6 @@ function App() {
       .then(res => res.json())
       .then(data => {
         setCategories(data.trivia_categories);
-        setLoading(false);
       });
   }, []);
 
@@ -48,8 +48,8 @@ function App() {
 
   const startQuiz = (params) => {
     setQuizStarted(true);
-    setQuizLoading(true);
     setError(null);
+    setLoading(true);
     
     let url = `https://opentdb.com/api.php?amount=${params.amount}&difficulty=${params.difficulty}&type=multiple`;
     if (params.category) url += `&category=${params.category}`;
@@ -59,11 +59,11 @@ function App() {
       .then(data => {
         if (data.response_code !== 0) throw new Error('Aucune question trouvée');
         setQuestions(data.results);
-        setQuizLoading(false);
+        setLoading(false);
       })
       .catch(err => {
         setError(err.message);
-        setQuizLoading(false);
+        setLoading(false);
       });
   };
 
@@ -90,6 +90,7 @@ function App() {
     setIsTimeUp(false);
     setScore(0);
     setError(null);
+    setLoading(false);
     reset();
   };
 
@@ -104,14 +105,15 @@ function App() {
         settings={settings}
         onUpdateSetting={updateSetting}
         onStartQuiz={startQuiz}
-        loading={loading}
       />
     );
   }
 
-  if (quizLoading) return <LoadingState message="Chargement des questions..." onCancel={newQuiz} />;
   if (error) return <ErrorState message={error} onRetry={newQuiz} />;
-  if (!questions.length) return <PreparationState quizParams={settings} categories={categories} onCancel={newQuiz} />;
+
+  if (loading) {
+    return <div>...</div>;
+  }
 
   if (currentQuestion >= questions.length) {
     return <QuizResults score={score} totalQuestions={questions.length} onNewQuiz={newQuiz} />;
