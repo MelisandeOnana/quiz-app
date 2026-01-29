@@ -5,12 +5,6 @@ const shuffleAnswers = (question) => {
   return answers.sort(() => Math.random() - 0.5);
 };
 
-const getTimerClass = (timeLeft) => {
-  if (timeLeft <= 5) return 'time-critical';
-  if (timeLeft <= 10) return 'time-warning';
-  return 'time-safe';
-};
-
 const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, timeLeft, onAnswerSelect, onNextQuestion, selectedAnswer, isTimeUp }) => {
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
@@ -29,7 +23,7 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
     <div className="quiz-question">
       <h2>Question {currentQuestionIndex + 1} / {totalQuestions}</h2>
       <div className="score-display">Score : {score} / {totalQuestions}</div>
-      <div className={`timer-display ${getTimerClass(timeLeft)}`}>
+      <div className="timer-display">
         Temps restant : {timeLeft}s
       </div>
       <div className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />

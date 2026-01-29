@@ -19,7 +19,6 @@ function App() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [score, setScore] = useState(0);
-
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
