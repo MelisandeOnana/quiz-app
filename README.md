@@ -30,10 +30,6 @@ Une application de quiz interactif développée en React qui utilise l'API Open 
 
 ### Timer par question
 - Temps limité de 15 secondes par question
-- Affichage visuel du temps restant avec codes couleur :
-  - 🟢 Vert : Plus de 10 secondes
-  - 🟠 Orange : 5-10 secondes
-  - 🔴 Rouge clignotant : Moins de 5 secondes
 - Passage automatique à la question suivante quand le temps expire
 - Timer correctement nettoyé pour éviter les accumulations
 
