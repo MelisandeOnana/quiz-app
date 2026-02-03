@@ -26,35 +26,36 @@ const QuizQuestion = ({ question, currentQuestionIndex, totalQuestions, score, t
       <div className="timer-display">
         Temps restant : {timeLeft}s
       </div>
-      <div className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
+        <div className="question-text">{question.question}</div>
       
       <div className="answers">
-        {shuffledAnswers.map((answer, idx) => (
-          <button
-            key={idx}
-            className={`answer-btn${selectedAnswer === answer ? ' selected' : ''}`}
-            onClick={() => onAnswerSelect(answer)}
-            disabled={selectedAnswer !== null}
-            dangerouslySetInnerHTML={{ __html: answer }}
-          />
-        ))}
+          {shuffledAnswers.map((answer, idx) => (
+            <button
+              key={idx}
+              className={`answer-btn${selectedAnswer === answer ? ' selected' : ''}`}
+              onClick={() => onAnswerSelect(answer)}
+              disabled={selectedAnswer !== null}
+            >
+              {answer}
+            </button>
+          ))}
       </div>
       
       {(selectedAnswer !== null || isTimeUp) && (
         <div>
           <div className={`answer-feedback ${isTimeUp ? '' : isCorrect ? 'answer-correct' : 'answer-incorrect'}`}>
-            {isTimeUp ? (
-              <span>Temps écoulé ! La bonne réponse était : <br/>
-                <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
-              </span>
-            ) : isCorrect ? (
-              <span>Bonne réponse !</span>
-            ) : (
-              <span>
-                Mauvaise réponse. La bonne réponse était : <br/>
-                <strong dangerouslySetInnerHTML={{ __html: question.correct_answer }} />
-              </span>
-            )}
+              {isTimeUp ? (
+                <span>Temps écoulé ! La bonne réponse était : <br/>
+                  <strong>{question.correct_answer}</strong>
+                </span>
+              ) : isCorrect ? (
+                <span>Bonne réponse !</span>
+              ) : (
+                <span>
+                  Mauvaise réponse. La bonne réponse était : <br/>
+                  <strong>{question.correct_answer}</strong>
+                </span>
+              )}
           </div>
           {!isTimeUp && (
             <button className="next-btn" onClick={onNextQuestion}>
