@@ -53,11 +53,8 @@ src/
 │   ├── QuizStart.jsx      # Écran de démarrage
 │   ├── QuizQuestion.jsx   # Affichage des questions
 │   ├── QuizResults.jsx    # Écran de résultats
-│   └── QuizStates.jsx     # États de chargement/erreur
 ├── hooks/
-│   └── useTimer.js        # Hook personnalisé pour le timer
-└── utils/
-    └── quizUtils.js       # Utilitaires (décodage HTML, etc.)
+   └── useTimer.js        # Hook personnalisé pour le timer
 ```
 
 ## Installation et lancement
@@ -91,10 +88,6 @@ src/
 ## API utilisée
 
 L'application utilise l'[Open Trivia Database API](https://opentdb.com/) :
-- API publique et gratuite
-- Pas de clé d'authentification requise
-- Support de multiples catégories et difficultés
-- Questions au format JSON avec entités HTML décodées
 
 Exemple d'endpoint :
 ```
